@@ -2,6 +2,7 @@
 
 namespace App\CompilerPass;
 
+use App\CompilerPass\CoreInterfaces\RegistryInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
@@ -14,7 +15,7 @@ class RegistryCompilerPass implements CompilerPassInterface
 
         foreach ($registries as $registryName => $registryTags) {
             $registryDef = $container->getDefinition($registryName);
-            $reflectedRegistry = new \ReflectionClass($registryName);
+            $reflectedRegistry = new \ReflectionClass($registryDef->getClass());
 
             if (!$reflectedRegistry->implementsInterface(RegistryInterface::class)) {
                 throw new \RuntimeException('Registry can implement RegistryInterface');

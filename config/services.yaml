@@ -3,7 +3,8 @@
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
-parameters:
+imports:
+    - { resource: parameters.yaml }
 
 services:
     _defaults:
@@ -12,11 +13,18 @@ services:
 
     App\:
         resource: '../src/*'
-        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+        exclude: '../src/{DependencyInjection,Entity,Migrations,Parsers,Tests,Kernel.php}'
 
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
-    App\Parsers\ParserRegistry:
+    registry.parser.video:
+        class: App\Parsers\ParserRegistry
         tags: ['system.registry']
+
+    App\Parsers\ParserRegistry:
+        alias: registry.parser.video
+
+    App\Parsers\ColdfilmParser:
+        tags: ['registry.parser.video']

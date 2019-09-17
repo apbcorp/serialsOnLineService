@@ -18,4 +18,17 @@ class ParserRegistry implements RegistryInterface
 
         $item->afterRegistry();
     }
+
+    public function getByName(string $name): ?RegistryItemInterface
+    {
+        return $this->services[$name] ?? null;
+    }
+
+    /**
+     * @return RegistryItemInterface[]
+     */
+    public function getAll(): array
+    {
+        return $this->services;
+    }
 }
