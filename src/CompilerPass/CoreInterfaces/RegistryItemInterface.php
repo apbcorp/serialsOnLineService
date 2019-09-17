@@ -2,7 +2,7 @@
 
 namespace App\CompilerPass\CoreInterfaces;
 
-use App\Structs\VideoParsingResultStruct;
+use App\Structs\Serial\VideoParsingResultStruct;
 
 interface RegistryItemInterface
 {

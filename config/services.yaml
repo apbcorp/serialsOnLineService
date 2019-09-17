@@ -20,11 +20,11 @@ services:
         tags: ['controller.service_arguments']
 
     registry.parser.video:
-        class: App\Parsers\ParserRegistry
+        class: App\Parsers\Sites\ParserRegistry
         tags: ['system.registry']
 
-    App\Parsers\ParserRegistry:
+    App\Parsers\Sites\ParserRegistry:
         alias: registry.parser.video
 
-    App\Parsers\ColdfilmParser:
+    App\Parsers\Sites\ColdfilmParser:
         tags: ['registry.parser.video']

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Parsers;
+namespace App\Parsers\Sites;
 
 use App\CompilerPass\CoreInterfaces\RegistryInterface;
 use App\CompilerPass\CoreInterfaces\RegistryItemInterface;
