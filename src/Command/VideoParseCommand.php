@@ -2,7 +2,10 @@
 
 namespace App\Command;
 
-use App\Parsers\Sites\ParserRegistry;
+use App\Parsers\PlaylistParser;
+use App\Parsers\Sites\SiteParserRegistry;
+use App\Services\OutputService;
+use App\Structs\Serial\VideoParsingResultStruct;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,13 +14,25 @@ use Symfony\Component\Console\Output\OutputInterface;
 class VideoParseCommand extends Command
 {
     /**
-     * @var ParserRegistry
+     * @var SiteParserRegistry
      */
-    private $registry;
+    private $siteParserRegistry;
 
-    public function __construct(ParserRegistry $registry)
+    /**
+     * @var PlaylistParser
+     */
+    private $parser;
+
+    /**
+     * @var OutputService
+     */
+    private $output;
+
+    public function __construct(SiteParserRegistry $siteParserRegistry, PlaylistParser $parser, OutputService $output)
     {
-        $this->registry = $registry;
+        $this->siteParserRegistry = $siteParserRegistry;
+        $this->parser = $parser;
+        $this->output = $output;
 
         parent::__construct(null);
     }
@@ -32,6 +47,7 @@ class VideoParseCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->output->addOutput($output);
         $sites = $input->getArgument('sites');
         $from = $input->getArgument('from');
 
@@ -43,12 +59,15 @@ class VideoParseCommand extends Command
             $from = (new \DateTime())->modify('-2 hour');
         }
 
-        foreach ($this->registry->getAll() as $name => $parser) {
+        $parsingResults = [];
+        foreach ($this->siteParserRegistry->getAll() as $name => $parser) {
             if ($sites && !in_array($name, $sites)) {
                 continue;
             }
 
-            $result = $parser->parse($from);
+            $struct = $parser->parse($from);
+            $this->parser->parse($struct);
+            $parsingResults[] = $struct;
         }
     }
 }

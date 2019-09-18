@@ -4,10 +4,11 @@ namespace App\Parsers\Sites;
 
 use App\CompilerPass\CoreInterfaces\RegistryItemInterface;
 use App\Services\HttpClient;
+use App\Services\OutputService;
 use App\Structs\Serial\VideoParsingItemStruct;
 use App\Structs\Serial\VideoParsingResultStruct;
 
-class ColdfilmParser implements RegistryItemInterface
+class ColdfilmParser implements SiteParserInterface
 {
     const BASE_URL = 'http://coldfilm.ws';
     const URL = 'http://coldfilm.ws/news/?page%d';
@@ -17,9 +18,15 @@ class ColdfilmParser implements RegistryItemInterface
      */
     private $httpClient;
 
-    public function __construct(HttpClient $client)
+    /**
+     * @var OutputService
+     */
+    private $output;
+
+    public function __construct(HttpClient $client, OutputService $outputService)
     {
         $this->httpClient = $client;
+        $this->output = $outputService;
     }
 
     public function getName(): string
@@ -37,8 +44,10 @@ class ColdfilmParser implements RegistryItemInterface
 
     public function parse(\DateTime $from): VideoParsingResultStruct
     {
+        $this->output->writeLn(sprintf('%s: Start parsing...', $this->getName()));
         $result = new VideoParsingResultStruct($this->getName());
         $this->fillResult($result, $from);
+        $this->output->writeLn(sprintf('%s: Finish parsing.', $this->getName()));
 
         return $result;
     }
@@ -52,6 +61,7 @@ class ColdfilmParser implements RegistryItemInterface
         $lastDate = new \DateTime();
 
         while ($lastDate >= $from) {
+            $this->output->writeLn(sprintf('%s: Parsing page %s', $this->getName(), $page));
             $this->parseCatalog($html, $struct, $from);
 
             $lastItem = $struct->getLastItem();
@@ -60,7 +70,10 @@ class ColdfilmParser implements RegistryItemInterface
             $page++;
         }
 
-        foreach ($struct->getItems() as $item) {
+        foreach ($struct->getItems() as $key => $item) {
+            $this->output->writeLn(
+                sprintf('%s: Parsing item %s of %s', $this->getName(), $key + 1, $struct->getItemCount())
+            );
             $this->parseItem($item);
         }
     }

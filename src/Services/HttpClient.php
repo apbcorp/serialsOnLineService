@@ -24,8 +24,9 @@ class HttpClient
         $this->logger = $logger;
     }
 
-    public function get(string $url, array $params = [])
+    public function get(string $url, array $params = [], int $mwait = 1000)
     {
+        usleep($mwait * 1000);
         $url = $this->buildUrl($url, $params);
 
         try {

@@ -20,6 +20,9 @@ class VideoParsingItemStruct
      */
     private $playlistLinks = [];
 
+    /** @var PlaylistStruct[] */
+    private $playlists = [];
+
     /**
      * @var int
      */
@@ -78,6 +81,27 @@ class VideoParsingItemStruct
     public function setPlaylistLinks(array $links)
     {
         $this->playlistLinks = $links;
+    }
+
+    /**
+     * @return PlaylistStruct[]
+     */
+    public function getPlayLists(): array
+    {
+        return $this->playlists;
+    }
+
+    /**
+     * @param PlaylistStruct[] $playlists
+     */
+    public function setPlayLists(array $playlists)
+    {
+        $this->playlists = $playlists;
+    }
+
+    public function addPlaylist(PlaylistStruct $playlist)
+    {
+        $this->playlists[] = $playlist;
     }
 
     public function addPlaylistLink(string $link)

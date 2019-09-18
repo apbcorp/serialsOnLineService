@@ -19,12 +19,27 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
-    registry.parser.video:
-        class: App\Parsers\Sites\ParserRegistry
+    registry.parser.site:
+        class: App\Parsers\Sites\SiteParserRegistry
         tags: ['system.registry']
 
-    App\Parsers\Sites\ParserRegistry:
-        alias: registry.parser.video
+    registry.parser.videoResource:
+        class: App\Parsers\VideoResources\VideoResourceParserRegistry
+        tags: ['system.registry']
+
+    App\Parsers\Sites\SiteParserRegistry:
+        alias: registry.parser.site
+
+    App\Parsers\VideoResources\VideoResourceParserRegistry:
+        alias: registry.parser.videoResource
 
     App\Parsers\Sites\ColdfilmParser:
-        tags: ['registry.parser.video']
+        tags: ['registry.parser.site']
+
+    App\Parsers\VideoResources\VioToParser:
+        tags: ['registry.parser.videoResource']
+
+    App\Parsers\VideoResources\ColdfilmOnlineParser:
+        tags: ['registry.parser.videoResource']
+
+    App\Parsers\PlaylistParser:

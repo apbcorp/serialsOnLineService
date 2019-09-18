@@ -40,6 +40,11 @@ class VideoParsingResultStruct
         return $this->items;
     }
 
+    public function getItemCount(): int
+    {
+        return count($this->items);
+    }
+
     public function getLastItem(): ?VideoParsingItemStruct
     {
         if (!$this->items) {
