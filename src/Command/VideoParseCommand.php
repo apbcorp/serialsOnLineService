@@ -5,7 +5,6 @@ namespace App\Command;
 use App\Parsers\PlaylistParser;
 use App\Parsers\Sites\SiteParserRegistry;
 use App\Services\OutputService;
-use App\Structs\Serial\VideoParsingResultStruct;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -66,6 +65,7 @@ class VideoParseCommand extends Command
             }
 
             $struct = $parser->parse($from);
+
             $this->parser->parse($struct);
             $parsingResults[] = $struct;
         }

@@ -9,5 +9,5 @@ interface VideoResourceParserInterface extends RegistryItemInterface
 {
     public function isMyService(string $url): bool;
 
-    public function parse(string $url): PlaylistStruct;
+    public function parse(string $url): ?PlaylistStruct;
 }

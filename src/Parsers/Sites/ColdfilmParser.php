@@ -95,7 +95,7 @@ class ColdfilmParser implements SiteParserInterface
                     $struct->addItem($parsingItem);
                 }
             } catch (\Exception $e) {
-
+                $this->output->writeLn(sprintf('<error>%s Error: %s</error>', $this->getName(), $e->getMessage()));
             }
         }
     }

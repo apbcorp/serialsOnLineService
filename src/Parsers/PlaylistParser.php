@@ -43,7 +43,15 @@ class PlaylistParser
                 }
 
                 $this->output->writeLn('Parsing playlist for ' . $parser->getName() . '...');
-                $item->addPlaylist($parser->parse($playlistLink));
+                try {
+                    $playlist = $parser->parse($playlistLink);
+
+                    if ($playlist) {
+                        $item->addPlaylist($playlist);
+                    }
+                } catch (\Exception $e) {
+                    $this->output->writeLn(sprintf('<error>%s Error: %s</error>', $parser->getName(), $e->getMessage()));
+                }
             }
         }
         $this->output->writeLn('Finish parsing playlists.');

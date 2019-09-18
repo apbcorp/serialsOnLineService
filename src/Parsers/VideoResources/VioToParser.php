@@ -11,10 +11,8 @@ class VioToParser extends AbstractVideoResourceParser
         return 'vio.to';
     }
 
-    public function parse(string $url): PlaylistStruct
+    public function parse(string $url): ?PlaylistStruct
     {
-        $result = new PlaylistStruct();
-
-        return $result;
+        return null;
     }
 }
