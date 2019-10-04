@@ -53,8 +53,8 @@ final class Version20190920154928 extends AbstractMigration
             CREATE TABLE `streams` (
                 `id` INT(11) AUTO_INCREMENT NOT NULL,
                 `episodeId` INT(11) NOT NULL, 
-                `translatedBy` VARCHAR(512) NOT NULL, 
-                `streamProvider` VARCHAR(512) NOT NULL, 
+                `translatedBy` VARCHAR(256) NOT NULL, 
+                `streamProvider` VARCHAR(256) NOT NULL, 
                 `url` VARCHAR(512) NOT NULL,
                 `resolution` INT(11) NOT NULL,
                 `visible` TINYINT(1) NOT NULL,

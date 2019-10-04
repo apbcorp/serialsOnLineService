@@ -34,14 +34,9 @@ class VideoParsingItemStruct
     private $episode = 0;
 
     /**
-     * @var float
+     * @var int[]
      */
-    private $floatRating = 0;
-
-    /**
-     * @var int
-     */
-    private $intRating = 0;
+    private $ratings = [];
 
     /**
      * @var \DateTime|null
@@ -129,24 +124,14 @@ class VideoParsingItemStruct
         $this->episode = $episode;
     }
 
-    public function getFloatRating(): float
+    public function addRating(int $ratingType, int $value)
     {
-        return $this->floatRating;
+        $this->ratings[$ratingType] = $value;
     }
 
-    public function setFloatRating(float $rating)
+    public function getRatings(): array
     {
-        $this->floatRating = $rating;
-    }
-
-    public function getIntRating(): int
-    {
-        return $this->intRating;
-    }
-
-    public function setIntRating(int $rating)
-    {
-        $this->intRating = $rating;
+        return $this->ratings;
     }
 
     public function getReleaseDate(): ?\DateTime

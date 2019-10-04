@@ -13,7 +13,7 @@ class M3U8Helper
      *
      * @return M3U8Struct[]
      */
-    public static function parse(string $url, string $code): array
+    public static function parse(string $url, string $code, string $provider): array
     {
         $rows = explode("\n", $code);
 
@@ -34,6 +34,7 @@ class M3U8Helper
 
                     break;
             }
+            $struct->setProvider($provider);
 
             if (!$struct->isEmpty()) {
                 $result[] = $struct;

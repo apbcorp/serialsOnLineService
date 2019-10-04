@@ -21,7 +21,7 @@ class ColdfilmOnlineParser extends AbstractVideoResourceParser
 
         $config = json_decode($matches[1], true);
         $result = new PlaylistStruct();
-        $result->setM3U8Items(M3U8Helper::parse($config['hls'], $this->client->get($config['hls'])));
+        $result->setM3U8Items(M3U8Helper::parse($config['hls'], $this->client->get($config['hls']), $this->getName()));
 
         return $result;
     }

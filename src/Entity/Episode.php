@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -55,9 +56,22 @@ class Episode
     /**
      * @var Collection
      *
-     * @ORM\OneToMany(targetEntity="Stream", mappedBy="stream", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="Stream", mappedBy="episode", cascade={"persist", "remove"})
      */
     private $streams;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="Rating", mappedBy="episode", cascade={"persist", "remove"})
+     */
+    private $ratings;
+
+    public function __construct()
+    {
+        $this->streams = new ArrayCollection();
+        $this->ratings = new ArrayCollection();
+    }
 
     public function getId(): int
     {
@@ -121,6 +135,19 @@ class Episode
     {
         $stream->setEpisode($this);
         $this->streams->add($stream);
+
+        return $this;
+    }
+
+    public function getRatings(): Collection
+    {
+        return $this->ratings;
+    }
+
+    public function addRating(Rating $rating)
+    {
+        $rating->setEpisode($this);
+        $this->ratings->add($rating);
 
         return $this;
     }

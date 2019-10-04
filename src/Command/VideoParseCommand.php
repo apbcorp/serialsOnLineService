@@ -3,13 +3,13 @@
 namespace App\Command;
 
 use App\Entity\Episode;
+use App\Entity\Rating;
 use App\Entity\Season;
 use App\Entity\Serial;
 use App\Entity\Stream;
+use App\Entity\Synonim;
 use App\Parsers\PlaylistParser;
 use App\Parsers\Sites\SiteParserRegistry;
-use App\Repository\SeasonRepository;
-use App\Repository\SerialRepository;
 use App\Services\OutputService;
 use App\Structs\Serial\PlaylistStruct;
 use App\Structs\Serial\VideoParsingResultStruct;
@@ -43,7 +43,12 @@ class VideoParseCommand extends Command
     private $entityManager;
 
     /**
-     * @var SerialRepository
+     * @var EntityRepository
+     */
+    private $synonimsRepository;
+
+    /**
+     * @var EntityRepository
      */
     private $serialRepository;
 
@@ -74,6 +79,7 @@ class VideoParseCommand extends Command
         $this->output->addOutput($output);
         $sites = $input->getArgument('sites');
         $from = $input->getArgument('from');
+        $this->synonimsRepository = $this->entityManager->getRepository(Synonim::class);
         $this->serialRepository = $this->entityManager->getRepository(Serial::class);
 
         try {
@@ -106,14 +112,36 @@ class VideoParseCommand extends Command
     {
         foreach ($result as $siteResult) {
             foreach ($siteResult->getItems() as $videoStruct) {
-                $serial = $this->serialRepository->findOneBy(['name' => $videoStruct->getTitle()]);
+                $this->output->writeLn(
+                    sprintf(
+                        'Saving: %s S%sE%s ...',
+                        $videoStruct->getTitle(),
+                        $videoStruct->getSeason(),
+                        $videoStruct->getEpisode()
+                    )
+                );
 
-                if (!$serial) {
-                    $serial = new Serial();
-                    $this->entityManager->persist($serial);
+                /** @var Synonim|null $synonim */
+                $synonim = $this->synonimsRepository->findOneBy(['name' => $videoStruct->getTitle()]);
+
+                if (!$synonim) {
+                    $serial = $this->serialRepository->findOneBy(['name' => $videoStruct->getTitle()]);
+
+                    if (!$serial) {
+                        $serial = new Serial();
+                        $serial->setName($videoStruct->getTitle());
+                        $this->entityManager->persist($serial);
+                        $this->output->writeLn('Add new serial ' . $serial->getName());
+                    }
+
+                    $synonim = (new Synonim())
+                        ->setName($videoStruct->getTitle())
+                        ->setSerial($serial);
+
+                    $this->entityManager->persist($synonim);
+                } else {
+                    $serial = $synonim->getSerial();
                 }
-
-                $serial->setName($videoStruct->getTitle());
 
                 $season = $serial->getSeasonByNumber($videoStruct->getSeason());
 
@@ -132,19 +160,52 @@ class VideoParseCommand extends Command
                     $season->addEpisode($episode);
                 }
 
-                $this->updateStreams($episode, $videoStruct->getPlayLists());
+                $this->updateRatings($episode, $videoStruct->getRatings());
+                $this->updateStreams($episode, $videoStruct->getPlayLists(), $siteResult->getSource());
+                $this->entityManager->flush();
+
+                $this->output->writeLn('Saving finished.');
             }
         }
+    }
 
-        $this->entityManager->flush();
+    /**
+     * @param Episode $episode
+     * @param int[]   $ratings
+     */
+    private function updateRatings(Episode $episode, array $ratings)
+    {
+        $ratingArray = [];
+        /** @var Rating $rating */
+        foreach ($episode->getRatings() as $rating) {
+            $ratingArray[$rating->getType()] = $rating;
+        }
+
+        foreach ($ratings as $type => $value) {
+            if (!isset($ratingArray[$type])) {
+                $ratingEntity = (new Rating())
+                    ->setType($type);
+
+                $episode->addRating($ratingEntity);
+            } else {
+                $ratingEntity = $ratingArray[$type];
+            }
+
+            $ratingEntity->setValue($value);
+        }
     }
 
     /**
      * @param Episode          $episode
      * @param PlaylistStruct[] $playlists
+     * @param string           $translatedBy
      */
-    private function updateStreams(Episode $episode, array $playlists)
+    private function updateStreams(Episode $episode, array $playlists, string $translatedBy)
     {
+        if (!$playlists) {
+            return;
+        }
+
         $streams = [];
         /** @var Stream $stream */
         foreach ($episode->getStreams() as $stream) {
@@ -152,6 +213,27 @@ class VideoParseCommand extends Command
             $stream->setVisible(false);
         }
 
-        
+        foreach ($playlists as $playlist) {
+            foreach ($playlist->getM3U8Items() as $m4uItem) {
+                if (!$m4uItem->getUrl()) {
+                    continue;
+                }
+
+                if (!isset($streams[$m4uItem->getUrl()])) {
+                    $streamEntity = (new Stream())
+                        ->setUrl($m4uItem->getUrl())
+                        ->setStreamProvider($m4uItem->getProvider())
+                        ->setTranslatedBy($translatedBy)
+                        ->setResolution($m4uItem->getResolution());
+
+                    $episode->addStream($streamEntity);
+                    $streams[$streamEntity->getUrl()] = $streamEntity;
+                } else {
+                    $streamEntity = $streams[$m4uItem->getUrl()];
+                }
+
+                $streamEntity->setVisible(true);
+            }
+        }
     }
 }

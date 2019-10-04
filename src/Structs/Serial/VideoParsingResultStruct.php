@@ -8,7 +8,7 @@ class VideoParsingResultStruct
     /**
      * @var string
      */
-    private $source;
+    private $source = '';
 
     /**
      * @var VideoParsingItemStruct[]
@@ -23,6 +23,11 @@ class VideoParsingResultStruct
     public function __construct(string $source)
     {
         $this->source = $source;
+    }
+
+    public function getSource(): string
+    {
+        return $this->source;
     }
 
     public function addItem(VideoParsingItemStruct $item)

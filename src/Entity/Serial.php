@@ -39,6 +39,13 @@ class Serial
     private $seasons;
 
     /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="Synonim", mappedBy="serial", cascade={"persist", "remove"})
+     */
+    private $synonims;
+
+    /**
      * @var bool
      *
      * @ORM\Column(name="visible", type="integer")
@@ -48,6 +55,7 @@ class Serial
     public function __construct()
     {
         $this->seasons = new ArrayCollection();
+        $this->synonims = new ArrayCollection();
     }
 
     public function getId(): int
@@ -102,5 +110,10 @@ class Serial
         $this->visible = $flag;
 
         return $this;
+    }
+
+    public function getSynonims(): Collection
+    {
+        return $this->synonims;
     }
 }

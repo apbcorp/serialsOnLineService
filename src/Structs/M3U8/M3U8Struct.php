@@ -2,22 +2,19 @@
 
 namespace App\Structs\M3U8;
 
+use App\Dictionary\VideoResolutionDictionary;
+
 class M3U8Struct
 {
-    const RESOLUTIONS = [
-        '1280x720' => self::RESOLUTION_720,
-        '854x480'  => self::RESOLUTION_480,
-        '640x360'  => self::RESOLUTION_360,
-    ];
-
-    const RESOLUTION_720 = 720;
-    const RESOLUTION_480 = 480;
-    const RESOLUTION_360 = 360;
-
     /**
      * @var string
      */
     private $url = '';
+
+    /**
+     * @var string
+     */
+    private $provider = '';
 
     /**
      * @var int
@@ -46,11 +43,11 @@ class M3U8Struct
 
     public function setResolutionWithValidation(string $resolution): bool
     {
-        if (!isset(self::RESOLUTIONS[$resolution])) {
+        if (!isset(VideoResolutionDictionary::RESOLUTIONS[$resolution])) {
             return false;
         }
 
-        $this->resolution = self::RESOLUTIONS[$resolution];
+        $this->resolution = VideoResolutionDictionary::RESOLUTIONS[$resolution];
 
         return true;
     }
@@ -73,5 +70,15 @@ class M3U8Struct
     public function isEmpty(): bool
     {
         return !$this->url;
+    }
+
+    public function getProvider(): string
+    {
+        return $this->provider;
+    }
+
+    public function setProvider(string $provider)
+    {
+        $this->provider = $provider;
     }
 }

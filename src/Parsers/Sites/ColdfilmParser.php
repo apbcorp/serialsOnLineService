@@ -3,6 +3,7 @@
 namespace App\Parsers\Sites;
 
 use App\CompilerPass\CoreInterfaces\RegistryItemInterface;
+use App\Entity\Rating;
 use App\Services\HttpClient;
 use App\Services\OutputService;
 use App\Structs\Serial\VideoParsingItemStruct;
@@ -56,12 +57,14 @@ class ColdfilmParser implements SiteParserInterface
     {
         $page = 1;
 
-        $url = sprintf(self::URL, $page);
-        $html = $this->httpClient->get($url);
         $lastDate = new \DateTime();
 
         while ($lastDate >= $from) {
             $this->output->writeLn(sprintf('%s: Parsing page %s', $this->getName(), $page));
+            
+            $url = sprintf(self::URL, $page);
+            $html = $this->httpClient->get($url);
+
             $this->parseCatalog($html, $struct, $from);
 
             $lastItem = $struct->getLastItem();
@@ -140,8 +143,8 @@ class ColdfilmParser implements SiteParserInterface
             return $result;
         }
 
-        $result->setFloatRating((float) $ratings[0]);
-        $result->setIntRating((int) $ratings[1]);
+        $result->addRating(Rating::TYPE_COLDFILM_FLOAT, (int) ($ratings[0] * 100));
+        $result->addRating(Rating::TYPE_COLDFILM_INT, (int) $ratings[1]);
 
         if (!preg_match('/kino-date.*(\d{2})\.(\d{2}).(\d{4})/Usi', $html, $matches)
             && !preg_match('/kino-date.*(Сегодня|Вчера)/', $html, $matches)

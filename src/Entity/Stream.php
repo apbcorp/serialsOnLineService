@@ -47,7 +47,7 @@ class Stream
     /**
      * @var string
      *
-     * @ORM\Column(name="url", type="string", length=256)
+     * @ORM\Column(name="url", type="string", length=512)
      */
     private $url = '';
 
