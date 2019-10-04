@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @package App\Entity
  *
  * @ORM\Table(name="ratings")
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\Repository\RatingRepository")
  */
 class Rating
 {

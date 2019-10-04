@@ -27,11 +27,18 @@ services:
         class: App\Parsers\VideoResources\VideoResourceParserRegistry
         tags: ['system.registry']
 
+    registry.formatter:
+        class: App\Formatter\FormatterRegistry
+        tags: ['system.registry']
+
     App\Parsers\Sites\SiteParserRegistry:
         alias: registry.parser.site
 
     App\Parsers\VideoResources\VideoResourceParserRegistry:
         alias: registry.parser.videoResource
+
+    App\Formatter\FormatterRegistry:
+        alias: registry.formatter
 
     App\Parsers\Sites\ColdfilmParser:
         tags: ['registry.parser.site']
@@ -43,3 +50,16 @@ services:
         tags: ['registry.parser.videoResource']
 
     App\Parsers\PlaylistParser:
+
+    App\Formatter\SerialListFormatter:
+        tags: ['registry.formatter']
+
+    App\Repository\RatingRepository:
+        factory: ['@doctrine.orm.default_entity_manager', 'getRepository']
+        arguments:
+            - App\Entity\Rating
+
+    App\Repository\SerialRepository:
+        factory: ['@doctrine.orm.default_entity_manager', 'getRepository']
+        arguments:
+            - App\Entity\Serial
