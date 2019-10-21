@@ -128,6 +128,10 @@ class ColdfilmParser implements SiteParserInterface
         $result->setSeason((int) $matches[2]);
         $result->setEpisode((int) $matches[3]);
 
+        if (preg_match('/kino-img.*<img.*src="(.*)"/Usi', $html, $matches)) {
+            $result->setScreen(self::BASE_URL . $matches[1]);
+        }
+
         if(!preg_match('/uStarRating.*title="(.*)"/Usi', $html, $matches)) {
             return $result;
         }

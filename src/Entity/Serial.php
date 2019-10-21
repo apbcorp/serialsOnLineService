@@ -32,6 +32,13 @@ class Serial
     private $name = '';
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="screen", type="string", length=2048)
+     */
+    private $screen = '';
+
+    /**
      * @var Collection
      *
      * @ORM\OneToMany(targetEntity="Season", mappedBy="serial", cascade={"persist", "remove"})
@@ -71,6 +78,18 @@ class Serial
     public function setName(string $name): Serial
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getScreen(): string
+    {
+        return $this->screen;
+    }
+
+    public function setScreen(string $screen)
+    {
+        $this->screen = $screen;
 
         return $this;
     }

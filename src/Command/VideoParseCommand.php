@@ -130,6 +130,7 @@ class VideoParseCommand extends Command
                     if (!$serial) {
                         $serial = new Serial();
                         $serial->setName($videoStruct->getTitle());
+                        $serial->setScreen($videoStruct->getScreen());
                         $this->entityManager->persist($serial);
                         $this->output->writeLn('Add new serial ' . $serial->getName());
                     }

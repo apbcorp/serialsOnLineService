@@ -13,6 +13,11 @@ class VideoParsingItemStruct
     /**
      * @var string
      */
+    private $screen = '';
+
+    /**
+     * @var string
+     */
     private $pageLink = '';
 
     /**
@@ -56,6 +61,18 @@ class VideoParsingItemStruct
     public function setTitle(string $title)
     {
         $this->title = $title;
+    }
+
+    public function getScreen(): string
+    {
+        return $this->screen;
+    }
+
+    public function setScreen(string $screen)
+    {
+        $this->screen = $screen;
+
+        return $this;
     }
 
     public function getPageLink(): string
